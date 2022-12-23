@@ -1,3 +1,9 @@
+# SparseKD note注解
+
+主要KD代码: [pcdet/models/kd_heads](pcdet/models/kd_heads)
+
+
+
 # Towards Efficient 3D Object Detection with Knowledge Distillation
 
 ---
