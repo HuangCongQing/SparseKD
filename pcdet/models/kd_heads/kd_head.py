@@ -22,9 +22,11 @@ class KDHeadTemplate(object):
         self.roi_head = None
 
     def build_loss(self, dense_head):
-        if not dense_head.is_teacher and self.model_cfg.get('KD_LOSS', None):
+        if not dense_head.is_teacher and self.model_cfg.get('KD_LOSS', None): #不同种类的KD-Loss配置
             if self.model_cfg.get('LOGIT_KD', None) and self.model_cfg.LOGIT_KD.ENABLED:
-                self.build_logit_kd_loss()
+                self.build_logit_kd_loss() # 
+                # 1 pcdet/models/kd_heads/anchor_head/anchor_logit_kd_head.py
+                # 2 pcdet/models/kd_heads/center_head/center_logit_kd_head.py
 
             if self.model_cfg.get('FEATURE_KD', None) and self.model_cfg.FEATURE_KD.ENABLED:
                 self.build_feature_kd_loss()

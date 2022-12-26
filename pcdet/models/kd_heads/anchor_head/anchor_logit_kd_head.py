@@ -54,7 +54,7 @@ class AnchorLogitKDHead(KDHeadTemplate):
                 cls_pred_tea = self.sigmoid(cls_pred_tea)
                 cls_pred_stu = self.sigmoid(cls_pred_stu)
 
-            kd_hm_loss_all = self.kd_hm_loss_func(cls_pred_stu, cls_pred_tea)
+            kd_hm_loss_all = self.kd_hm_loss_func(cls_pred_stu, cls_pred_tea) # student和teacher计算loss
 
             mask = torch.ones([bs, height, width], dtype=torch.float32).cuda()
             if loss_cfg.HM_LOSS.get('fg_mask_spatial', None):

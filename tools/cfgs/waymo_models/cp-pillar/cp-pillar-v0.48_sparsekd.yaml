@@ -233,6 +233,7 @@ KD:
         FG_MASK: False
         BOX_MASK: False
 
+    # 蒸馏方法1 logit
     LOGIT_KD:
         ENABLED: True
         # decode prediction to bounding boxes or not in logit kd
@@ -245,6 +246,7 @@ KD:
             align_channel: False
         }
 
+    # 蒸馏方法2 feature
     FEATURE_KD:
         ENABLED: False
 
@@ -278,6 +280,7 @@ KD:
             ROI: gt # ['gt', 'tea', 'stu']
             THRESH: 0.0 # for teacher prediction for student prediction
 
+    # 蒸馏方法3 label
     LABEL_ASSIGN_KD:
         ENABLED: True
         SCORE_TYPE: cls

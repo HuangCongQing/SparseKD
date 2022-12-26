@@ -145,9 +145,10 @@ def main():
     last_epoch = -1
     if args.pretrained_model is not None:
         logger.info('Loading pretrained parameters >>>>>>')
+        # load_params_from_file》》pcdet/models/detectors/detector3d_template.py
         model.load_params_from_file(
             filename=args.pretrained_model, to_cpu=dist_train, logger=logger,
-            remap_cfg=cfg.OPTIMIZATION.get('REMAP_PRETRAIN', None)
+            remap_cfg=cfg.OPTIMIZATION.get('REMAP_PRETRAIN', None) # 参数重映射 
         )
 
     if args.ckpt is not None:

@@ -225,7 +225,7 @@ OPTIMIZATION:
 
     GRAD_NORM_CLIP: 10
 
-    REMAP_PRETRAIN:
+    REMAP_PRETRAIN: # 参数重映射FNA https://www.yuque.com/huangzhongqing/lightweight/qptymg2xyz9kaqpl
         ENABLED: False
         WAY: BN_SCALE
         BN_SCALE:
@@ -309,7 +309,7 @@ KD_LOSS:
     HM_LOSS: {
         type: MSELoss,
         weight: 7.0,
-        thresh: 0.0,  # threshold for score PP Logit KD
+        thresh: 0.0,  # threshold for score PP Logit KD (Pivotal Position Logit KD)
         fg_mask: True,
         soft_mask: True,
         rank: -1,  # rank PP Logit KD, -1 means not used

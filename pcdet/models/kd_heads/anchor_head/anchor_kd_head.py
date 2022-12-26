@@ -10,7 +10,7 @@ from .anchor_label_kd_head import AnchorLabelAssignKDHead
 class AnchorHeadKD(AnchorLogitKDHead, AnchorFeatureKDHead, AnchorLabelAssignKDHead):
     def __init__(self, model_cfg, dense_head):
         super(AnchorHeadKD, self).__init__(model_cfg, dense_head)
-        self.build_loss(dense_head)
+        self.build_loss(dense_head) # pcdet/models/kd_heads/kd_head.py
 
     def get_kd_loss(self, batch_dict, tb_dict):
         kd_loss = 0.0
