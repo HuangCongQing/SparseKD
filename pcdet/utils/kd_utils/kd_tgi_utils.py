@@ -64,9 +64,8 @@ def is_last_layer(p, model_state):
         return True
     return False
 
-
 def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
-    stu_model_state = {}  # self.state_dict().copy()
+    stu_model_state = {}  # self.state_dict().copy() 最终返回值
     self_model_state = model.state_dict().copy()
 
     stu_bn_idx_dict = {None: None}
@@ -75,7 +74,7 @@ def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
     param_queue = []
     param_name_to_class_type = OrderedDict()
     _map_state_dict_to_module(param_name_to_class_type, '')
-    for k in model_state.keys():
+    for k in model_state.keys(): # 遍历model_state
         k_list = k.split('.')
         param_queue.append(k)
         if issubclass(param_name_to_class_type[k], nn.modules.batchnorm._BatchNorm) and \
@@ -91,6 +90,7 @@ def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
             )
             stu_bn_idx_dict[k] = _stu_bn_idx
             stu_bn_idx_list.append(k)
+            # 
             _remap_param_in_queue(
                 param_queue, model_state, stu_model_state, self_model_state, stu_bn_idx_dict,
                 stu_bn_idx_list, param_name_to_class_type
@@ -99,6 +99,7 @@ def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
         elif is_last_layer(k, model_state) and k_list[-1] == 'bias':
             # last layer, a conv layer
             stu_bn_idx_list.append(None)
+            # 
             _remap_param_in_queue(
                 param_queue, model_state, stu_model_state, self_model_state, stu_bn_idx_dict,
                 stu_bn_idx_list, param_name_to_class_type
@@ -106,7 +107,7 @@ def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
             param_queue.clear()
             stu_bn_idx_list.pop()
     assert len(model_state) == len(stu_model_state)
-    return stu_model_state
+    return stu_model_state # 返回
 
 
 def _remap_to_current_model_by_ofa(model, model_state, cfg):
@@ -180,6 +181,7 @@ def _remap_to_current_model_by_fnav1(model, model_state, cfg):
     return stu_model_state
 
 
+# 参数重映射FNA实现 配置参数WAY: BN_SCALE（cp-pillar-v0.4_sparsekd.yaml）<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 def _remap_to_current_model_by_fnav2(model, model_state, cfg):
     stu_model_state = {}  # self.state_dict().copy()
     self_model_state = model.state_dict().copy()
@@ -188,9 +190,9 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
     stu_bn_idx_list = [None]
     bn_weight_key = None
     param_name_to_class_type = OrderedDict()
-    _map_state_dict_to_module(model, param_name_to_class_type, '')
+    _map_state_dict_to_module(model, param_name_to_class_type, '') # mapping
 
-    spconv_keys = find_all_spconv_keys(model)
+    spconv_keys = find_all_spconv_keys(model) # 稀疏卷积的keys
 
     for k in model_state.keys():
         k_list = k.split('.')
@@ -226,11 +228,11 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
             )
             stu_bn_idx_list.pop()
             curr_v = curr_v.index_select(1, _stu_input_dim_idx)
-        stu_model_state[k] = _narrow_weight(k, curr_v, self_model_state, spconv_keys)
+        stu_model_state[k] = _narrow_weight(k, curr_v, self_model_state, spconv_keys) # 赋值权重
     assert len(model_state) == len(stu_model_state)
     return stu_model_state
 
-
+# 被调用 重映射
 def _remap_param_in_queue(param_queue, model_state, new_model_state, self_model_state,
                           stu_idx_dict, stu_idx_list, param_name_to_class_type):
     stu_input_dim_idx = stu_idx_dict[stu_idx_list[-2]]

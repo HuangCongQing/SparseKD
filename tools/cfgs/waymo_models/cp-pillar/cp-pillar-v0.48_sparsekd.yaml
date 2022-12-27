@@ -233,7 +233,7 @@ KD:
         FG_MASK: False
         BOX_MASK: False
 
-    # 蒸馏方法1 logit
+    # 蒸馏方法1 logit （是PP logit KD吗？）
     LOGIT_KD:
         ENABLED: True
         # decode prediction to bounding boxes or not in logit kd

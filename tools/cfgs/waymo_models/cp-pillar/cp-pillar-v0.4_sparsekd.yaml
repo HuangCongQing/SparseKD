@@ -227,9 +227,9 @@ OPTIMIZATION:
 
     REMAP_PRETRAIN: # 参数重映射FNA https://www.yuque.com/huangzhongqing/lightweight/qptymg2xyz9kaqpl
         ENABLED: False
-        WAY: BN_SCALE
+        WAY: BN_SCALE # 重映射方式
         BN_SCALE:
-            ABS: True
+            ABS: True # 参数
         OFA:
             l1_norm: max
 
