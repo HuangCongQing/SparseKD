@@ -24,9 +24,10 @@ class DataBaseSampler(object):
         
         for db_info_path in sampler_cfg.DB_INFO_PATH:
             db_info_path = self.root_path.resolve() / db_info_path
-            with open(str(db_info_path), 'rb') as f:
+            with open(str(db_info_path), 'rb') as f: #  /home/chongqinghuang/code/light_weight/SparseKD/data/waymo/waymo_processed_data_v0_5_0_waymo_dbinfos_train_sampled_1.pkl
                 infos = pickle.load(f)
-                [self.db_infos[cur_class].extend(infos[cur_class]) for cur_class in class_names]
+                # [self.db_infos[cur_class].extend(infos[cur_class]) for cur_class in class_names]
+                [self.db_infos[cur_class].extend(infos[cur_class]) for cur_class in class_names if cur_class in infos] # he reason may be that you do not have full kitti data to create the gt database,
 
         for func_name, val in sampler_cfg.PREPARE.items():
             self.db_infos = getattr(self, func_name)(self.db_infos, val)
