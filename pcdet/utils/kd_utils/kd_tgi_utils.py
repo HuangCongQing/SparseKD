@@ -64,6 +64,7 @@ def is_last_layer(p, model_state):
         return True
     return False
 
+# main 参数重映射入口
 def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
     stu_model_state = {}  # self.state_dict().copy() 最终返回值
     self_model_state = model.state_dict().copy()
@@ -73,7 +74,7 @@ def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
     bn_weight_key = None
     param_queue = []
     param_name_to_class_type = OrderedDict()
-    _map_state_dict_to_module(param_name_to_class_type, '')
+    _map_state_dict_to_module(param_name_to_class_type, '') # TypeError: _map_state_dict_to_module() missing 1 required positional argument: 'prefix'
     for k in model_state.keys(): # 遍历model_state
         k_list = k.split('.')
         param_queue.append(k)
@@ -217,6 +218,9 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
                 param_name_to_class_type, key='map_to_bev'
             )
             stu_bn_idx_list.pop()
+            # fix: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            _stu_input_dim_idx = _stu_input_dim_idx.to(device)
             curr_v = curr_v.index_select(1, _stu_input_dim_idx)
         elif len(model_state[k].shape) == 4 and 'dense_head.shared_conv' in k and \
                 'dense_head.shared_conv' not in stu_bn_idx_list[-1]:
@@ -227,6 +231,9 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
                 param_name_to_class_type, key='map_to_densehead'
             )
             stu_bn_idx_list.pop()
+            # fix: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            _stu_input_dim_idx = _stu_input_dim_idx.to(device)
             curr_v = curr_v.index_select(1, _stu_input_dim_idx)
         stu_model_state[k] = _narrow_weight(k, curr_v, self_model_state, spconv_keys) # 赋值权重
     assert len(model_state) == len(stu_model_state)

@@ -1,8 +1,9 @@
 CLASS_NAMES: ['Vehicle', 'Pedestrian', 'Cyclist']
 
-TEACHER_CKPT: '../output/model_zoo/cp-pillar/cp-pillar_5909.pth'
-PRETRAINED_MODEL: '../output/model_zoo/cp-pillar/cp-pillar_5909.pth'
-
+#TEACHER_CKPT: '../output/model_zoo/cp-pillar/cp-pillar_5909.pth'
+#PRETRAINED_MODEL: '../output/model_zoo/cp-pillar/cp-pillar_5909.pth'
+TEACHER_CKPT: '../output/waymo_models/cp-pillar/cp-pillar-v0.4/default/ckpt/checkpoint_epoch_20.pth'
+PRETRAINED_MODEL: '../output/waymo_models/cp-pillar/cp-pillar-v0.4/default/ckpt/checkpoint_epoch_20.pth'
 
 DATA_CONFIG:
     _BASE_CONFIG_: cfgs/dataset_configs/waymo_dataset.yaml
@@ -226,8 +227,8 @@ OPTIMIZATION:
     GRAD_NORM_CLIP: 10
 
     REMAP_PRETRAIN: # 参数重映射FNA https://www.yuque.com/huangzhongqing/lightweight/qptymg2xyz9kaqpl
-        ENABLED: False
-        WAY: BN_SCALE # 重映射方式
+        ENABLED: True # False  True!!!!
+        WAY: FNAV2 # BN_SCALE # 重映射方式
         BN_SCALE:
             ABS: True # 参数
         OFA:

@@ -148,7 +148,7 @@ def main():
         # load_params_from_file》》pcdet/models/detectors/detector3d_template.py
         model.load_params_from_file(
             filename=args.pretrained_model, to_cpu=dist_train, logger=logger,
-            remap_cfg=cfg.OPTIMIZATION.get('REMAP_PRETRAIN', None) # 参数重映射 
+            remap_cfg=cfg.OPTIMIZATION.get('REMAP_PRETRAIN', None) # 参数重映射<<<<<< 
         )
 
     if args.ckpt is not None:
