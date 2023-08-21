@@ -425,6 +425,7 @@ class Detector3DTemplate(nn.Module):
         if remap_cfg and remap_cfg.ENABLED:
             logger.info('==> Remap pretrained model parameters with: %s' % remap_cfg.WAY.lower())
             model_state_disk = self._remap_to_current_model(model_state_disk, remap_cfg) # 返回映射好的权重
+        # 重新得到新的权重
         state_dict, update_model_state = self._load_state_dict(model_state_disk, strict=False)
 
         for key in state_dict:
@@ -493,5 +494,6 @@ class Detector3DTemplate(nn.Module):
 
     # 重映射
     def _remap_to_current_model(self, model_state, cfg=None):
-        # 调用kd_tgi_utils._remap_to_current_model_by_bn_scale()函数
+        # 调用kd_tgi_utils._remap_to_current_model_by_bn_scale()函数 pcdet/utils/kd_utils/kd_tgi_utils.py
+        # eg. def _remap_to_current_model_by_fnav2(model, model_state, cfg):
         return getattr(kd_tgi_utils, '_remap_to_current_model_by_{}'.format(cfg.WAY.lower()))(self, model_state, cfg)

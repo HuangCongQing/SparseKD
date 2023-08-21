@@ -30,7 +30,7 @@ def process_kd_config():
         cfg.MODEL.VFE.VFE_KD = cfg.KD.VFE_KD
         cfg.MODEL_TEACHER.VFE.VFE_KD = cfg.KD.VFE_KD
 
-
+# for student
 def prepare_kd_modules(teacher_model, model):
     # add a flag to indicate KD for each module in the detector
     if isinstance(model, torch.nn.parallel.DistributedDataParallel):
@@ -40,7 +40,7 @@ def prepare_kd_modules(teacher_model, model):
         for cur_module in model.module_list:
             cur_module.kd = True
 
-    put_teacher_prior_to_student(teacher_model, model, cfg.MODEL)
+    put_teacher_prior_to_student(teacher_model, model, cfg.MODEL) #
 
     # if student need some extra learnable moduleq
     if hasattr(model.dense_head.kd_head, 'register_extra_layers'):

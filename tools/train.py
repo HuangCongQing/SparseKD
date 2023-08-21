@@ -15,8 +15,8 @@ from pcdet.datasets import build_dataloader
 from pcdet.models import build_network, model_fn_decorator, build_teacher_network
 from pcdet.utils import common_utils
 from train_utils.optimization import build_optimizer, build_scheduler
-from train_utils.train_utils import train_model
-from train_utils.train_kd_utils import train_model_kd
+from train_utils.train_utils import train_model #
+from train_utils.train_kd_utils import train_model_kd #
 from pcdet.utils.kd_utils import kd_utils
 
 
@@ -125,8 +125,10 @@ def main():
         total_epochs=args.epochs
     )
 
+    # student网络(学生网络)
     model = build_network(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=train_set)
 
+    # teacher网络
     if cfg.get('KD', None) and cfg.KD.ENABLED:
         assert args.teacher_ckpt is not None
         teacher_model = build_teacher_network(cfg, args, train_set, dist_train, logger)
@@ -198,7 +200,7 @@ def main():
         ckpt_save_interval=args.ckpt_save_interval,
         max_ckpt_save_num=args.max_ckpt_save_num,
         merge_all_iters_to_one_epoch=args.merge_all_iters_to_one_epoch,
-        teacher_model=teacher_model
+        teacher_model=teacher_model # 教师网咯
     )
 
     if hasattr(train_set, 'use_shared_memory') and train_set.use_shared_memory:

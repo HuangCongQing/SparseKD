@@ -1,7 +1,7 @@
 CLASS_NAMES: ['Vehicle', 'Pedestrian', 'Cyclist']
 
-TEACHER_CKPT: '../output/model_zoo/cp-voxel/cp-voxel_6429.pth'
-PRETRAINED_MODEL: '../output/model_zoo/cp-voxel/cp-voxel_6429.pth'
+TEACHER_CKPT: '/home/chongqinghuang/code/light_weight/SparseKD/output/waymo_models/cp-voxel/cp-voxel-s/default/ckpt/checkpoint_epoch_4.pth'
+PRETRAINED_MODEL: '/home/chongqinghuang/code/light_weight/SparseKD/output/waymo_models/cp-voxel/cp-voxel-s/default/ckpt/checkpoint_epoch_4.pth'
 
 DATA_CONFIG:
     _BASE_CONFIG_: cfgs/dataset_configs/waymo_dataset.yaml

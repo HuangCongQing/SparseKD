@@ -64,7 +64,6 @@ def is_last_layer(p, model_state):
         return True
     return False
 
-# main 参数重映射入口
 def _remap_to_current_model_by_bn_scale(model, model_state, cfg):
     stu_model_state = {}  # self.state_dict().copy() 最终返回值
     self_model_state = model.state_dict().copy()
@@ -182,7 +181,8 @@ def _remap_to_current_model_by_fnav1(model, model_state, cfg):
     return stu_model_state
 
 
-# 参数重映射FNA实现 配置参数WAY: BN_SCALE（cp-pillar-v0.4_sparsekd.yaml）<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# main 参数重映射入口参数重映射FNA实现 配置参数WAY: BN_SCALE（cp-pillar-v0.4_sparsekd.yaml）<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+# WAY: FNAV2 # 重映射方式
 def _remap_to_current_model_by_fnav2(model, model_state, cfg):
     stu_model_state = {}  # self.state_dict().copy()
     self_model_state = model.state_dict().copy()
@@ -191,6 +191,7 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
     stu_bn_idx_list = [None]
     bn_weight_key = None
     param_name_to_class_type = OrderedDict()
+    # 将字典映射修改为 {“key”: type} <class 'pcdet.models.detectors.centerpoint.CenterPoint'>
     _map_state_dict_to_module(model, param_name_to_class_type, '') # mapping
 
     spconv_keys = find_all_spconv_keys(model) # 稀疏卷积的keys
@@ -200,7 +201,7 @@ def _remap_to_current_model_by_fnav2(model, model_state, cfg):
         curr_v = model_state[k].clone()
         # update stu_bn_idx_list & stu_bn_idx_dict
         if issubclass(param_name_to_class_type[k], nn.modules.batchnorm._BatchNorm) and \
-                k_list[-1] == 'weight':
+                k_list[-1] == 'weight': #
             # e.g. backbone_3d.conv1.0.bn1.weight
             bn_weight_key = k
         elif issubclass(param_name_to_class_type[k], nn.modules.batchnorm._BatchNorm) and \

@@ -6,11 +6,12 @@ from pcdet.utils import common_utils
 from pcdet.models.dense_heads import CenterHead, AnchorHeadTemplate
 
 
+# 重命名
 def adjust_batch_info_teacher(batch):
     if cfg.KD.get('DIFF_VOXEL', None):
         batch['voxels_stu'] = batch.pop('voxels')
         batch['voxel_coords_stu'] = batch.pop('voxel_coords')
-        batch['voxel_num_points_stu'] = batch.pop('voxel_num_points')
+        batch['voxel_num_points_stu'] = batch.pop('voxel_num_points') # 重命名
 
         batch['voxels'] = batch.pop('voxels_tea')
         batch['voxel_coords'] = batch.pop('voxel_coords_tea')
@@ -47,29 +48,31 @@ def adjust_batch_info_teacher(batch):
     batch['teacher_target_dict_flag'] = teacher_target_dict_flag
     batch['teacher_decoded_pred_flag'] = teacher_decoded_pred_flag
 
-
+ # 重命名
 def adjust_batch_info_student(batch):
     if cfg.KD.get('DIFF_VOXEL', None):
         del batch['voxels']
         del batch['voxel_coords']
         del batch['voxel_num_points']
 
-        batch['voxels'] = batch.pop('voxels_stu')
+        batch['voxels'] = batch.pop('voxels_stu') # 重命名
         batch['voxel_coords'] = batch.pop('voxel_coords_stu')
         batch['voxel_num_points'] = batch.pop('voxel_num_points_stu')
 
-
+# 教师模型的预测结果
 def add_teacher_pred_to_batch(teacher_model, batch, pred_dicts=None):
+    # 配置参数 FEATURE_KD
     if cfg.KD.get('FEATURE_KD', None) and cfg.KD.FEATURE_KD.ENABLED:
-        feature_name = cfg.KD.FEATURE_KD.get('FEATURE_NAME_TEA', cfg.KD.FEATURE_KD.FEATURE_NAME)
-        batch[feature_name + '_tea'] = batch[feature_name].detach()
+        feature_name = cfg.KD.FEATURE_KD.get('FEATURE_NAME_TEA', cfg.KD.FEATURE_KD.FEATURE_NAME) # FEATURE_NAME_TEA: spatial_features_2d
+        batch[feature_name + '_tea'] = batch[feature_name].detach() # spatial_features_2d
 
     if cfg.KD.get('PILLAR_KD', None) and cfg.KD.PILLAR_KD.ENABLED:
         feature_name_tea = cfg.KD.PILLAR_KD.FEATURE_NAME_TEA
-        batch['voxel_features_tea'] = batch.pop(feature_name_tea)
+        batch['voxel_features_tea'] = batch.pop(feature_name_tea) # 相当于重命名
 
     if cfg.KD.get('VFE_KD', None) and cfg.KD.VFE_KD.ENABLED:
         batch['point_features_tea'] = batch.pop('point_features')
+        # teacher预测结果
         batch['pred_tea'] = teacher_model.dense_head.forward_ret_dict['pred_dicts']
         if cfg.KD.VFE_KD.get('SAVE_INDS', None):
             batch['unq_inv_pfn_tea'] = batch.pop('unq_inv_pfn')
@@ -98,6 +101,7 @@ def add_teacher_pred_to_batch(teacher_model, batch, pred_dicts=None):
             batch['box_preds_tea'] = teacher_model.dense_head.forward_ret_dict['box_preds']
             batch['dir_cls_preds_tea'] = teacher_model.dense_head.forward_ret_dict['dir_cls_preds']
 
+    # 预测结果？？
     if batch.get('teacher_decoded_pred_flag', None):
         if (not teacher_model.training) and teacher_model.roi_head is not None:
             batch['decoded_pred_tea'] = pred_dicts
@@ -106,7 +110,7 @@ def add_teacher_pred_to_batch(teacher_model, batch, pred_dicts=None):
         elif isinstance(teacher_model.dense_head, AnchorHeadTemplate):
             batch['decoded_pred_tea'] = pred_dicts
 
-
+# main
 def forward(model, teacher_model, batch, optimizer, extra_optim, optim_cfg, load_data_to_gpu, **kwargs):
     optimizer.zero_grad()
     if extra_optim is not None:
@@ -116,15 +120,16 @@ def forward(model, teacher_model, batch, optimizer, extra_optim, optim_cfg, load
         adjust_batch_info_teacher(batch)
         load_data_to_gpu(batch)
         if teacher_model.training:
-            batch = teacher_model(batch)
+            batch = teacher_model(batch) #
             pred_dicts = None
         else:
-            pred_dicts, ret_dict = teacher_model(batch)
+            pred_dicts, ret_dict = teacher_model(batch) # 教师的预测结果
+        # 添加teacher教师模型预测!!batch是字典
         add_teacher_pred_to_batch(teacher_model, batch, pred_dicts=pred_dicts)
 
     adjust_batch_info_student(batch)
 
-    ret_dict, tb_dict, disp_dict = model(batch)
+    ret_dict, tb_dict, disp_dict = model(batch) # Centerpoint 预测结果
     loss = ret_dict['loss'].mean()
 
     loss.backward()

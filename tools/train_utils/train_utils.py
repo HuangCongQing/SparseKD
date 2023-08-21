@@ -52,6 +52,7 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
         if extra_optim is not None:
             extra_optim.zero_grad()
 
+        # 训练入口main
         loss, tb_dict, disp_dict = model_func(model, batch)
 
         forward_timer = time.time()
@@ -95,7 +96,7 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
         pbar.close()
     return accumulated_iter
 
-
+# 正常训练
 def train_model(model, optimizer, train_loader, model_func, lr_scheduler, optim_cfg,
                 start_epoch, total_epochs, start_iter, rank, tb_log, ckpt_save_dir, train_sampler=None,
                 lr_warmup_scheduler=None, ckpt_save_interval=1, max_ckpt_save_num=50,

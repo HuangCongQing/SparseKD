@@ -43,7 +43,7 @@ MODEL:
         WITH_DISTANCE: False
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
-        NUM_FILTERS: [ 64, 64 ]
+        NUM_FILTERS: [ 32, 32 ]  #  [ 64, 64 ] *0.5
 
     MAP_TO_BEV:
         NAME: PointPillarScatter
@@ -234,7 +234,7 @@ OPTIMIZATION:
         OFA:
             l1_norm: max
 
-
+#==========================================================
 KD:
     ENABLED: True
     TEACHER_MODE: train # train or eval

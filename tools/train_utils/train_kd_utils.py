@@ -18,7 +18,7 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
     if total_it_each_epoch == len(train_loader):
         dataloader_iter = iter(train_loader)
 
-    forward_func = getattr(kd_forwad, cfg.KD.get('FORWARD_FUNC', 'forward'))
+    forward_func = getattr(kd_forwad, cfg.KD.get('FORWARD_FUNC', 'forward')) # pcdet/utils/kd_utils/kd_forwad.py
 
     if rank == 0:
         pbar = tqdm.tqdm(total=total_it_each_epoch, leave=leave_pbar, desc='train', dynamic_ncols=True)
@@ -53,6 +53,8 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
 
         model.train()
 
+        # 训练得到loss
+        #  # pcdet/utils/kd_utils/kd_forwad.py
         loss, tb_dict, disp_dict = forward_func(
             model, teacher_model, batch, optimizer, extra_optim, optim_cfg, load_data_to_gpu
         )
@@ -90,7 +92,7 @@ def train_one_epoch(model, optimizer, train_loader, model_func, lr_scheduler, ac
         pbar.close()
     return accumulated_iter
 
-
+# 有教师网络额训练
 def train_model_kd(model, optimizer, train_loader, model_func, lr_scheduler, optim_cfg,
                    start_epoch, total_epochs, start_iter, rank, tb_log, ckpt_save_dir, train_sampler=None,
                    lr_warmup_scheduler=None, ckpt_save_interval=1, max_ckpt_save_num=50,
@@ -116,6 +118,7 @@ def train_model_kd(model, optimizer, train_loader, model_func, lr_scheduler, opt
     if teacher_model is not None and cfg.KD.get('TEACHER_BN_MODE', None) == 'train':
         teacher_model.apply(common_utils.set_bn_train)
 
+    # 训练epochs
     with tqdm.trange(start_epoch, total_epochs, desc='epochs', dynamic_ncols=True, leave=(rank == 0)) as tbar:
         total_it_each_epoch = len(train_loader)
         if merge_all_iters_to_one_epoch:
@@ -133,6 +136,7 @@ def train_model_kd(model, optimizer, train_loader, model_func, lr_scheduler, opt
                 cur_scheduler = lr_warmup_scheduler
             else:
                 cur_scheduler = lr_scheduler
+            # 训练1个epochs
             accumulated_iter = train_one_epoch(
                 model, optimizer, train_loader, model_func,
                 lr_scheduler=cur_scheduler,
@@ -141,7 +145,7 @@ def train_model_kd(model, optimizer, train_loader, model_func, lr_scheduler, opt
                 leave_pbar=(cur_epoch + 1 == total_epochs),
                 total_it_each_epoch=total_it_each_epoch,
                 dataloader_iter=dataloader_iter,
-                teacher_model=teacher_model,
+                teacher_model=teacher_model, # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,,
                 extra_optim=extra_optim,
                 extra_lr_scheduler=extra_lr_scheduler
             )
